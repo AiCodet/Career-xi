@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#07110d">
+<title>XI</title>
+<style>
+:root{
+  --bg:#07100d;--panel:#101915;--panel2:#15221c;--line:rgba(255,255,255,.09);
+  --text:#f6fbf8;--muted:#8fa39a;--green:#35e58a;--gold:#ffd264;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.setup{position:fixed;inset:0;z-index:100;background:
+ radial-gradient(circle at 75% 15%,rgba(53,229,138,.22),transparent 35%),
+ linear-gradient(#06100c,#070b0a 55%,#070b0a);
+ display:flex;align-items:center;justify-content:center;padding:20px}
+.setup-card{width:min(430px,100%);padding:20px;border-radius:24px;background:rgba(17,27,24,.96);border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.38)}
+.eyebrow{font-size:10px;letter-spacing:.16em;color:#b8cbc2;font-weight:800}
+.setup-card h1{font-size:36px;margin:5px 0 10px;letter-spacing:.06em}
+.setup-card p{font-size:12px;color:var(--muted)}
+.setup-card input{width:100%;margin-top:10px;padding:13px 14px;background:#09110f;border:1px solid var(--line);border-radius:13px;color:white;outline:none}
+.btn{width:100%;margin-top:10px;padding:13px 14px;border:0;border-radius:13px;font-weight:900}
+.btn.green{background:var(--green);color:#062014}
+.btn.dark{background:#17221e;color:#fff;border:1px solid var(--line)}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:82px;background:
+ radial-gradient(circle at 90% 5%,rgba(53,229,138,.11),transparent 28%),#08100e}
+.screen{padding:18px 15px 100px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.logo{font-size:24px;font-weight:1000;letter-spacing:.08em}
+.sub{font-size:11px;color:var(--muted);margin-top:2px}
+.coins{font-size:12px;font-weight:900;padding:8px 11px;border-radius:999px;background:rgba(255,210,100,.12);border:1px solid rgba(255,210,100,.25);color:#ffe8a3}
+.hero{padding:20px;border-radius:24px;min-height:210px;background:
+ radial-gradient(circle at 85% 20%,rgba(53,229,138,.24),transparent 35%),
+ linear-gradient(145deg,#16221d,#0d1512);border:1px solid var(--line)}
+.hero h2{font-size:31px;line-height:.96;margin:10px 0}
+.hero p{font-size:12px;color:var(--muted);max-width:300px}
+.smallbtn{display:inline-block;border:0;border-radius:12px;padding:11px 14px;font-weight:900;background:var(--green);color:#052015;margin-top:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tile{padding:15px;border-radius:18px;background:linear-gradient(145deg,#14201b,#0d1512);border:1px solid var(--line);min-height:105px}
+.tile .ico{font-size:23px}
+.tile b{display:block;font-size:14px;margin-top:13px}
+.tile span{font-size:10px;color:var(--muted)}
+.heading{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 10px}
+.heading h3{font-size:17px;margin:0}
+.heading small{font-size:10px;color:var(--muted)}
+.cards{display:flex;gap:10px;overflow:auto;padding-bottom:6px}
+.card{width:138px;min-width:138px;height:198px;padding:10px;border-radius:16px;border:1px solid rgba(255,255,255,.14);position:relative;
+ background:linear-gradient(145deg,#8a6a20,#30250e 60%,#171108);box-shadow:0 12px 24px rgba(0,0,0,.22)}
+.card.prospect{background:linear-gradient(145deg,#4d6677,#17242c 60%,#0a1014)}
+.card.elite{background:linear-gradient(145deg,#6743b1,#1d1536 60%,#0d0918)}
+.card.immortal{background:linear-gradient(145deg,#c1435a,#35131c 60%,#13090c)}
+.ovr{font-size:28px;font-weight:1000;line-height:1}
+.pos{font-size:10px;font-weight:900}
+.flag{font-size:16px;margin-top:2px}
+.face{height:62px;margin:4px -4px;background:rgba(255,255,255,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:31px}
+.name{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.statrow{font-size:9px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:5px}
+.pot{position:absolute;right:7px;top:7px;font-size:8px;font-weight:900;background:rgba(0,0,0,.25);padding:4px 6px;border-radius:999px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);z-index:50;background:rgba(6,12,10,.95);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr)}
+.nav button{background:transparent;border:0;color:#70817a;padding:5px 2px;font-size:9px;font-weight:800;border-radius:10px}
+.nav button i{display:block;font-style:normal;font-size:17px;margin-bottom:2px}
+.nav button.active{color:white;background:rgba(255,255,255,.06)}
+.panel{padding:14px;border-radius:18px;background:#101915;border:1px solid var(--line)}
+.pitch{height:565px;border-radius:22px;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.12);background:
+ linear-gradient(rgba(16,110,65,.88),rgba(11,77,48,.88))}
+.pitch:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.18)}
+.slot{position:absolute;transform:translate(-50%,-50%);width:64px;height:80px;border-radius:10px;border:1px dashed rgba(255,255,255,.28);background:rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:8px}
+.slot.full{border-style:solid;background:linear-gradient(145deg,#8b6b22,#30240e)}
+.slot strong{font-size:17px}
+.search{width:100%;padding:12px 13px;border-radius:13px;background:#0c1512;border:1px solid var(--line);color:white;outline:none}
+.collection{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.collection .card{width:100%;min-width:0;height:208px}
+.market{padding:11px;border-radius:15px;background:#101915;border:1px solid var(--line);display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.mini{width:48px;height:61px;border-radius:9px;background:linear-gradient(145deg,#8a6a20,#2f240e);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:1000}
+.market .info{flex:1;min-width:0}
+.market .info b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market .info small{font-size:9px;color:var(--muted)}
+.price{font-size:11px;color:#ffe69d;font-weight:900;text-align:right}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:min(520px,100%);max-height:88vh;overflow:auto;background:#0b1310;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:15px 14px 26px}
+.sheettop{display:flex;align-items:center;justify-content:space-between}
+.sheettop h3{margin:3px 0 12px}
+.close{width:34px;height:34px;border:0;border-radius:50%;background:#17221e;color:white}
+.log{font-size:11px;line-height:1.55;min-height:135px;background:#08100e;border-radius:12px;padding:11px;color:#bac9c2;margin-top:10px}
+.error{font-size:10px;color:#ff8e93;margin-top:8px;display:none}
+</style>
+<script>
+/* This tiny function is intentionally independent of the rest of the app.
+   Even if another feature has an error, CREATE CLUB still exits the setup screen. */
+function createClub(){
+  var input=document.getElementById("clubNameInput");
+  var name=input && input.value ? input.value.replace(/^\s+|\s+$/g,"") : "";
+  if(!name){name="Vertex XI";}
+  try{localStorage.setItem("xi_club_name",name);}catch(e){}
+  var setup=document.getElementById("setup");
+  var app=document.getElementById("app");
+  if(setup){setup.style.display="none";}
+  if(app){app.style.display="block";}
+  if(window.finishCreateClub){
+    try{window.finishCreateClub(name);}catch(e){}
+  }
+  return false;
+}
+</script>
+</head>
+<body>
+
+<div id="setup" class="setup">
+  <div class="setup-card">
+    <div class="eyebrow">WELCOME TO</div>
+    <h1>XI</h1>
+    <p>Create your club and open your first pack.</p>
+    <input id="clubNameInput" maxlength="24" value="" placeholder="Club name" autocomplete="off">
+    <button type="button" class="btn green" onclick="return createClub();">CREATE CLUB</button>
+    <div id="setupError" class="error"></div>
+  </div>
+</div>
+
+<div id="app" class="app" style="display:none">
+  <section id="home" class="screen page"></section>
+  <section id="play" class="screen page hidden"></section>
+  <section id="squad" class="screen page hidden"></section>
+  <section id="club" class="screen page hidden"></section>
+  <section id="market" class="screen page hidden"></section>
+
+  <nav class="nav">
+    <button class="navbtn active" data-page="home"><i>⌂</i>HOME</button>
+    <button class="navbtn" data-page="play"><i>▶</i>PLAY</button>
+    <button class="navbtn" data-page="squad"><i>▦</i>SQUAD</button>
+    <button class="navbtn" data-page="club"><i>◈</i>CLUB</button>
+    <button class="navbtn" data-page="market"><i>◎</i>MARKET</button>
+  </nav>
+</div>
+
+<div id="modal" class="modal hidden"><div id="sheet" class="sheet"></div></div>
+
+<script>
+(function(){
+  var firstNames=["Noah","Mateo","Luca","Elias","Malik","Caio","Ren","Emil","Thiago","Javier","Kai","Leo","Milan","Nico","Yuri","Sami","Adrian","Rafael","Tomas","Iker","Hugo","Dario","Marek","Jonas","Oscar","Enzo","Ari","Deni","Luis","Marco"];
+  var lastNames=["Kovac","Varela","Diarra","Hartmann","Bellandi","Serrano","Nyberg","Velez","Ishikawa","Renner","Costa","Barreto","Mendes","Laurent","Romano","Silva","Petrovic","Moreau","Adler","Santos","Ferrer","Bauer","Marin","Ortega","Rossi","Adebayo","Keller","Navarro","Ribeiro","Novak"];
+  var flags=["🇬🇧","🇪🇸","🇮🇹","🇩🇪","🇫🇷","🇧🇷","🇦🇷","🇭🇷","🇵🇹","🇳🇱","🇯🇵","🇸🇪","🇨🇴","🇺🇾","🇧🇪","🇩🇰","🇳🇬","🇬🇭"];
+  var positions=["GK","RB","CB","CB","LB","CDM","CM","CAM","RW","LW","ST"];
+  var clubs=["Kingsport FC","Westbridge United","Bromley Athletic","Northcastle FC","Redhaven","Riverside City","Blackthorn FC","Royal Vale","Real Azul","Costa Verde","Torino Rosso","Milano Stella","Rhein Adler","Berlin Kraft","Paris Royale","Lyon Argent","Aurora Rio","Santos Nova","Buenos Plata","Tokyo Nova"];
+  var traits=["Burst","Rapid","Precision","Cannon","Flair","Control","Vision","Creator","Engine","Powerhouse","Wall","Aerial","Leader","Reflex"];
+
+  function seeded(n){var x=Math.sin(n*913.73)*43758.5453;return x-Math.floor(x);}
+  function rand(n,a,b){return Math.floor(seeded(n)*(b-a+1))+a;}
+  function makeDB(){
+    var arr=[],i,ovr,pot,pos,stats,rarity;
+    for(i=1;i<=1500;i++){
+      var r=seeded(i*7);
+      if(r<.08)ovr=rand(i,45,54);
+      else if(r<.25)ovr=rand(i,55,64);
+      else if(r<.51)ovr=rand(i,65,74);
+      else if(r<.79)ovr=rand(i,75,84);
+      else if(r<.91)ovr=rand(i,85,89);
+      else if(r<.973)ovr=rand(i,90,94);
+      else if(r<.997)ovr=rand(i,95,99);
+      else ovr=rand(i,100,104);
+
+      pot=Math.min(145,Math.max(ovr,ovr+rand(i*4,5,43)));
+      if(i===947){ovr=57;pot=145;}
+      pos=positions[i%positions.length];
+
+      function s(seed){return Math.max(25,Math.min(145,ovr+rand(i*seed,-15,15)));}
+      if(pos==="GK"){
+        stats={DIV:s(2),HAN:s(3),KIC:s(5),REF:s(7),SPD:Math.max(25,ovr-12),POS:s(11)};
+      }else{
+        stats={PAC:s(2),SHO:s(3),PAS:s(5),DRI:s(7),DEF:s(11),PHY:s(13)};
+      }
+      rarity=ovr>=100?"immortal":ovr>=90?"elite":ovr>=75?"gold":"prospect";
+      arr.push({
+        id:i,
+        name:firstNames[i%firstNames.length]+" "+lastNames[(i*7)%lastNames.length],
+        ovr:ovr,pot:pot,pos:pos,flag:flags[(i*3)%flags.length],
+        club:clubs[(i*11)%clubs.length],
+        trait:traits[(i*5)%traits.length],
+        rarity:rarity,stats:stats,
+        value:Math.max(250,Math.round((ovr*ovr*(pot/100))*2.2/50)*50),
+        evo:0,games:0
+      });
+    }
+    return arr;
+  }
+
+  var db=makeDB();
+  var state={
+    club:null,coins:25000,owned:[],squad:[],wins:0,draws:0,losses:0,level:1,evoSlots:2
+  };
+
+  function load(){
+    try{
+      var raw=localStorage.getItem("xi_v14_state");
+      if(raw){
+        var x=JSON.parse(raw);
+        if(x && typeof x==="object"){
+          for(var k in state){if(Object.prototype.hasOwnProperty.call(x,k)){state[k]=x[k];}}
+        }
+      }
+      var clubOnly=localStorage.getItem("xi_club_name");
+      if(!state.club && clubOnly){state.club=clubOnly;}
+    }catch(e){}
+    if(!Array.isArray(state.owned)){state.owned=[];}
+    if(!Array.isArray(state.squad)){state.squad=[];}
+  }
+  function save(){
+    try{localStorage.setItem("xi_v14_state",JSON.stringify(state));}catch(e){}
+  }
+
+  function byId(id){return db[id-1] || null;}
+  function owned(){
+    var out=[],i,p;
+    for(i=0;i<state.owned.length;i++){p=byId(state.owned[i]);if(p){out.push(p);}}
+    return out;
+  }
+  function top(title){
+    return '<div class="top"><div><div class="logo">XI</div><div class="sub">'+escapeHTML(state.club||"YOUR CLUB")+' · LVL '+state.level+'</div></div>'+
+      '<div class="coins">◉ '+number(state.coins)+'</div></div>'+
+      (title?'<div class="heading"><h3>'+title+'</h3></div>':'');
+  }
+  function escapeHTML(v){
+    return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function number(v){return Number(v||0).toLocaleString();}
+  function card(p){
+    var keys=[],k;
+    for(k in p.stats){if(Object.prototype.hasOwnProperty.call(p.stats,k)){keys.push(k);}}
+    var st="",i;
+    for(i=0;i<keys.length;i++){k=keys[i];st+='<div><b>'+p.stats[k]+'</b> '+k+'</div>';}
+    return '<div class="card '+p.rarity+'" onclick="XI.player('+p.id+')">'+
+      '<div class="pot">POT '+(state.owned.indexOf(p.id)>=0?p.pot:"???")+'</div>'+
+      '<div class="ovr">'+p.ovr+'</div><div class="pos">'+p.pos+'</div>'+
+      '<div class="flag">'+p.flag+'</div><div class="face">⚽</div>'+
+      '<div class="name">'+escapeHTML(p.name)+'</div><div class="statrow">'+st+'</div></div>';
+  }
+
+  function home(){
+    var list=owned().sort(function(a,b){return b.ovr-a.ovr;}).slice(0,5);
+    var cards="",i;
+    for(i=0;i<list.length;i++){cards+=card(list[i]);}
+    if(!cards){cards='<div class="panel" style="font-size:11px;color:var(--muted)">Your starter players will appear here.</div>';}
+    document.getElementById("home").innerHTML=top("")+
+      '<div class="hero"><div class="eyebrow">SEASON 1 · GENESIS</div><h2>BUILD YOUR<br>LEGACY.</h2>'+
+      '<p>Collect fictional stars, discover hidden potential and evolve them towards 145.</p>'+
+      '<button class="smallbtn" onclick="XI.openPack()">✦ OPEN PACK</button></div>'+
+      '<div class="grid">'+
+      '<div class="tile" onclick="XI.go(\'squad\')"><div class="ico">▦</div><b>MY SQUAD</b><span>'+state.squad.length+'/11 selected</span></div>'+
+      '<div class="tile" onclick="XI.evos()"><div class="ico">⬆</div><b>EVOLUTIONS</b><span>'+state.evoSlots+' active slots</span></div>'+
+      '<div class="tile" onclick="XI.go(\'play\')"><div class="ico">⚔</div><b>DIVISION 10</b><span>'+state.wins+'W · '+state.draws+'D · '+state.losses+'L</span></div>'+
+      '<div class="tile" onclick="XI.go(\'club\')"><div class="ico">◈</div><b>COLLECTION</b><span>'+state.owned.length+'/1500 cards</span></div>'+
+      '</div><div class="heading"><h3>Top players</h3><small>'+state.owned.length+' owned</small></div><div class="cards">'+cards+'</div>';
+  }
+
+  function play(){
+    document.getElementById("play").innerHTML=top("Play")+
+      '<div class="panel"><div class="eyebrow">RANKED · DIVISION 10</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 60px 1fr;text-align:center;align-items:center;margin:20px 0">'+
+      '<div><div style="font-size:28px">XI</div><b style="font-size:11px">'+escapeHTML(state.club||"Your Club")+'</b></div>'+
+      '<div id="score" style="font-size:28px;font-weight:1000">–</div>'+
+      '<div><div style="font-size:28px">◆</div><b style="font-size:11px">Northstar FC</b></div></div>'+
+      '<button class="btn green" onclick="XI.match()">PLAY MATCH</button>'+
+      '<div id="matchlog" class="log">Build at least 7 squad players, then play.</div></div>';
+  }
+
+  var spots=[[50,92],[20,77],[40,80],[60,80],[80,77],[29,59],[50,62],[71,59],[50,42],[25,25],[75,25]];
+  var labels=["GK","LB","CB","CB","RB","CM","CM","CAM","ST","LW","RW"];
+  function squad(){
+    var html="",i,p;
+    for(i=0;i<11;i++){
+      p=byId(state.squad[i]);
+      html+='<div class="slot '+(p?"full":"")+'" style="left:'+spots[i][0]+'%;top:'+spots[i][1]+'%" onclick="XI.pick('+i+')">';
+      if(p){html+='<strong>'+p.ovr+'</strong><b>'+escapeHTML(p.name.split(" ")[1]||p.name)+'</b><span>'+p.pos+'</span>';}
+      else{html+='<strong>+</strong><b>'+labels[i]+'</b>';}
+      html+='</div>';
+    }
+    var sq=[],sum=0;
+    for(i=0;i<state.squad.length;i++){p=byId(state.squad[i]);if(p){sq.push(p);sum+=p.ovr;}}
+    var avg=sq.length?Math.round(sum/sq.length):0;
+    document.getElementById("squad").innerHTML=top("Squad")+
+      '<div class="panel" style="display:flex;justify-content:space-between;margin-bottom:10px"><div><div class="eyebrow">FORMATION</div><b>4-3-3 ATTACK</b></div><div style="text-align:right"><div class="eyebrow">OVR</div><b style="font-size:22px">'+avg+'</b></div></div>'+
+      '<div class="pitch">'+html+'</div><button class="btn dark" onclick="XI.autoSquad()">AUTO BUILD BEST XI</button>';
+  }
+
+  function club(){
+    var list=owned().sort(function(a,b){return b.ovr-a.ovr;});
+    var html="",i;
+    for(i=0;i<list.length;i++){html+=card(list[i]);}
+    document.getElementById("club").innerHTML=top("My Collection")+
+      '<input id="collectionSearch" class="search" placeholder="Search players" oninput="XI.searchClub(this.value)">'+
+      '<div id="collectionGrid" class="collection">'+(html||'<div class="panel">No cards yet.</div>')+'</div>';
+  }
+
+  function market(){
+    var list=[],i,p,start=Math.floor(Math.random()*1300)+1;
+    for(i=0;i<14;i++){
+      p=byId(((start+i*37)%1500)+1);
+      if(p && state.owned.indexOf(p.id)<0){list.push(p);}
+    }
+    var html="";
+    for(i=0;i<list.length;i++){
+      p=list[i];
+      html+='<div class="market"><div class="mini">'+p.ovr+'</div><div class="info"><b>'+escapeHTML(p.name)+'</b>'+
+        '<small>'+p.flag+' '+p.pos+' · '+escapeHTML(p.club)+'<br>POT ??? · '+p.trait+'</small></div>'+
+        '<div><div class="price">◉ '+number(p.value)+'</div><button class="smallbtn" style="padding:7px 10px;margin-top:4px" onclick="XI.buy('+p.id+')">BUY</button></div></div>';
+    }
+    document.getElementById("market").innerHTML=top("Transfer Market")+'<div>'+html+'</div>';
+  }
+
+  function renderAll(){home();play();squad();club();market();}
+
+  function starterPlayers(){
+    var wanted=["GK","CB","CM","ST","RW"],result=[],i,j,p;
+    for(i=0;i<wanted.length;i++){
+      for(j=0;j<db.length;j++){
+        p=db[j];
+        if(p.pos===wanted[i] && p.ovr>=75 && p.ovr<=88 && result.indexOf(p.id)<0){
+          result.push(p.id);break;
+        }
+      }
+    }
+    return result;
+  }
+
+  window.finishCreateClub=function(name){
+    state.club=name;
+    if(state.owned.length===0){
+      state.owned=starterPlayers();
+      state.squad=state.owned.slice(0,5);
+    }
+    save();
+    document.getElementById("app").style.display="block";
+    renderAll();
+    XI.go("home");
+  };
+
+  window.XI={
+    go:function(page){
+      var pages=document.querySelectorAll(".page"),buttons=document.querySelectorAll(".navbtn"),i;
+      for(i=0;i<pages.length;i++){pages[i].classList.add("hidden");}
+      var target=document.getElementById(page);
+      if(target){target.classList.remove("hidden");}
+      for(i=0;i<buttons.length;i++){
+        if(buttons[i].getAttribute("data-page")===page){buttons[i].classList.add("active");}
+        else{buttons[i].classList.remove("active");}
+      }
+      if(page==="home")home();
+      if(page==="play")play();
+      if(page==="squad")squad();
+      if(page==="club")club();
+      if(page==="market")market();
+    },
+    player:function(id){
+      var p=byId(id);if(!p)return;
+      var ownedFlag=state.owned.indexOf(id)>=0;
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>'+escapeHTML(p.name)+'</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div style="display:flex;justify-content:center;margin:10px 0 18px">'+card(p)+'</div>'+
+        '<div class="panel"><b>'+p.flag+' '+escapeHTML(p.club)+'</b>'+
+        '<div class="sub" style="margin-top:6px">'+p.pos+' · '+p.trait+' · '+p.games+' apps</div>'+
+        '<div style="display:flex;justify-content:space-between;margin-top:12px"><span>Potential</span><b>'+(ownedFlag?p.pot:"???")+'</b></div>'+
+        '<div style="display:flex;justify-content:space-between;margin-top:8px"><span>Evolution</span><b>E'+p.evo+'</b></div></div>'+
+        (ownedFlag?'<button class="btn green" onclick="XI.evolve('+p.id+')">EVOLVE · ◉ '+number(6000+p.ovr*100)+'</button>':'');
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    close:function(){document.getElementById("modal").classList.add("hidden");},
+    openPack:function(){
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>GENESIS PACK</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="panel" style="text-align:center;padding:24px"><div style="font-size:58px">XI</div><h2>GENESIS PACK</h2>'+
+        '<p class="sub">5 players · 1 guaranteed 75+</p><button class="btn green" onclick="XI.pack()">OPEN · ◉ 5,000</button></div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    pack:function(){
+      if(state.coins<5000){return;}
+      state.coins-=5000;
+      var picks=[],i,p,tries;
+      for(i=0;i<5;i++){
+        tries=0;
+        do{
+          p=db[Math.floor(Math.random()*db.length)];
+          tries++;
+        }while((state.owned.indexOf(p.id)>=0 || picks.indexOf(p.id)>=0 || (i===0 && p.ovr<75)) && tries<300);
+        if(p && picks.indexOf(p.id)<0){picks.push(p.id);state.owned.push(p.id);}
+      }
+      save();renderAll();
+      var html="",q;
+      for(i=0;i<picks.length;i++){q=byId(picks[i]);if(q)html+=card(q);}
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>PACK OPENED</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="cards">'+html+'</div><button class="btn green" onclick="XI.close()">SEND TO CLUB</button>';
+    },
+    buy:function(id){
+      var p=byId(id);if(!p || state.owned.indexOf(id)>=0 || state.coins<p.value)return;
+      state.coins-=p.value;state.owned.push(id);save();renderAll();market();
+    },
+    pick:function(index){
+      var list=owned().sort(function(a,b){return b.ovr-a.ovr;}),html="",i;
+      for(i=0;i<list.length;i++){
+        html+='<div onclick="XI.setSlot('+index+','+list[i].id+')" style="display:inline-block;margin:4px">'+card(list[i])+'</div>';
+      }
+      document.getElementById("sheet").innerHTML='<div class="sheettop"><h3>Select player</h3><button class="close" onclick="XI.close()">×</button></div><div class="cards" style="flex-wrap:wrap">'+html+'</div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    setSlot:function(index,id){
+      state.squad[index]=id;save();XI.close();squad();home();
+    },
+    autoSquad:function(){
+      var list=owned().sort(function(a,b){return b.ovr-a.ovr;}).slice(0,11),ids=[],i;
+      for(i=0;i<list.length;i++){ids.push(list[i].id);}
+      state.squad=ids;save();squad();home();
+    },
+    match:function(){
+      var team=[],i,p,sum=0;
+      for(i=0;i<state.squad.length;i++){p=byId(state.squad[i]);if(p){team.push(p);sum+=p.ovr;}}
+      if(team.length<7){
+        document.getElementById("matchlog").innerHTML="You need at least 7 players in your squad.";
+        return;
+      }
+      var avg=sum/team.length;
+      var my=Math.max(0,Math.floor((avg-55)/18+Math.random()*3));
+      var opp=Math.max(0,Math.floor((75-55)/18+Math.random()*3));
+      document.getElementById("score").innerHTML=my+"–"+opp;
+      document.getElementById("matchlog").innerHTML="18' Early pressure from both sides.<br>37' Big chance created.<br>62' Goal threat builds.<br>84' Final push.<br><b>FT · "+my+"-"+opp+"</b>";
+      if(my>opp){state.wins++;state.coins+=800;}
+      else if(my<opp){state.losses++;state.coins+=300;}
+      else{state.draws++;state.coins+=450;}
+      for(i=0;i<team.length;i++){team[i].games++;}
+      save();home();
+    },
+    searchClub:function(q){
+      q=String(q||"").toLowerCase();
+      var list=owned(),html="",i,p;
+      for(i=0;i<list.length;i++){
+        p=list[i];
+        if(!q || p.name.toLowerCase().indexOf(q)>=0 || p.club.toLowerCase().indexOf(q)>=0 || p.pos.toLowerCase().indexOf(q)>=0){html+=card(p);}
+      }
+      document.getElementById("collectionGrid").innerHTML=html||'<div class="panel">No matches.</div>';
+    },
+    evos:function(){
+      var list=owned().sort(function(a,b){return b.pot-a.pot;}).slice(0,8),html="",i;
+      for(i=0;i<list.length;i++){html+=card(list[i]);}
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>EVOLUTION LAB</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="panel"><div class="eyebrow">ACTIVE SLOTS</div><h2>'+state.evoSlots+' / 7</h2><p class="sub">Upgrade players towards their individual potential.</p>'+
+        '<button class="btn dark" onclick="XI.buySlot()">UNLOCK NEXT SLOT</button></div>'+
+        '<div class="heading"><h3>Recommended</h3></div><div class="cards">'+html+'</div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    buySlot:function(){
+      var costs=[0,0,25000,75000,200000,500000,1000000];
+      if(state.evoSlots>=7)return;
+      var cost=costs[state.evoSlots];
+      if(state.coins<cost)return;
+      state.coins-=cost;state.evoSlots++;save();home();XI.evos();
+    },
+    evolve:function(id){
+      var p=byId(id);if(!p)return;
+      var cost=6000+p.ovr*100;
+      if(state.coins<cost || p.ovr>=p.pot)return;
+      state.coins-=cost;
+      p.ovr=Math.min(p.pot,p.ovr+1);p.evo++;
+      if(p.stats.PAC!=null)p.stats.PAC=Math.min(145,p.stats.PAC+3);
+      if(p.stats.DRI!=null)p.stats.DRI=Math.min(145,p.stats.DRI+2);
+      p.rarity=p.ovr>=130?"immortal":p.ovr>=90?"elite":p.ovr>=75?"gold":"prospect";
+      save();renderAll();XI.player(id);
+    }
+  };
+
+  var navs=document.querySelectorAll(".navbtn"),n;
+  for(n=0;n<navs.length;n++){
+    navs[n].onclick=function(){XI.go(this.getAttribute("data-page"));};
+  }
+
+  load();
+
+  if(state.club){
+    document.getElementById("setup").style.display="none";
+    document.getElementById("app").style.display="block";
+    renderAll();
+    XI.go("home");
+  }else{
+    document.getElementById("setup").style.display="flex";
+    document.getElementById("app").style.display="none";
+  }
+})();
+</script>
+</body>
+</html>
