@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#07110d">
+<title>XI</title>
+<style>
+:root{
+  --bg:#07100d;--panel:#101915;--panel2:#15221c;--line:rgba(255,255,255,.09);
+  --text:#f6fbf8;--muted:#8fa39a;--green:#35e58a;--gold:#ffd264;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.setup{position:fixed;inset:0;z-index:100;background:
+ radial-gradient(circle at 75% 15%,rgba(53,229,138,.22),transparent 35%),
+ linear-gradient(#06100c,#070b0a 55%,#070b0a);
+ display:flex;align-items:center;justify-content:center;padding:20px}
+.setup-card{width:min(560px,94vw);padding:20px;border-radius:24px;background:rgba(17,27,24,.96);border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.38)}
+.eyebrow{font-size:10px;letter-spacing:.16em;color:#b8cbc2;font-weight:800}
+.setup-card h1{font-size:36px;margin:5px 0 10px;letter-spacing:.06em}
+.setup-card p{font-size:12px;color:var(--muted)}
+.setup-card input{width:100%;margin-top:10px;padding:13px 14px;background:#09110f;border:1px solid var(--line);border-radius:13px;color:white;outline:none}
+.btn{width:100%;margin-top:10px;padding:13px 14px;border:0;border-radius:13px;font-weight:900}
+.btn.green{background:var(--green);color:#062014}
+.btn.dark{background:#17221e;color:#fff;border:1px solid var(--line)}
+.app{width:100%;max-width:none;margin:0;min-height:100vh;padding-bottom:96px;background:
+ radial-gradient(circle at 90% 5%,rgba(53,229,138,.11),transparent 28%),#08100e}
+.screen{width:100%;padding:22px 18px 116px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.logo{font-size:29px;font-weight:1000;letter-spacing:.08em}
+.sub{font-size:13px;color:var(--muted);margin-top:2px}
+.coins{font-size:14px;font-weight:900;padding:8px 11px;border-radius:999px;background:rgba(255,210,100,.12);border:1px solid rgba(255,210,100,.25);color:#ffe8a3}
+.hero{padding:20px;border-radius:24px;min-height:210px;background:
+ radial-gradient(circle at 85% 20%,rgba(53,229,138,.24),transparent 35%),
+ linear-gradient(145deg,#16221d,#0d1512);border:1px solid var(--line)}
+.hero h2{font-size:31px;line-height:.96;margin:10px 0}
+.hero p{font-size:12px;color:var(--muted);max-width:300px}
+.smallbtn{display:inline-block;border:0;border-radius:12px;padding:11px 14px;font-weight:900;background:var(--green);color:#052015;margin-top:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tile{padding:15px;border-radius:18px;background:linear-gradient(145deg,#14201b,#0d1512);border:1px solid var(--line);min-height:105px}
+.tile .ico{font-size:23px}
+.tile b{display:block;font-size:14px;margin-top:13px}
+.tile span{font-size:10px;color:var(--muted)}
+.heading{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 10px}
+.heading h3{font-size:20px;margin:0}
+.heading small{font-size:10px;color:var(--muted)}
+.cards{display:flex;gap:10px;overflow:auto;padding-bottom:6px}
+.card{width:138px;min-width:138px;height:198px;padding:10px;border-radius:16px;border:1px solid rgba(255,255,255,.14);position:relative;
+ background:linear-gradient(145deg,#8a6a20,#30250e 60%,#171108);box-shadow:0 12px 24px rgba(0,0,0,.22)}
+.card.prospect{background:linear-gradient(145deg,#4d6677,#17242c 60%,#0a1014)}
+.card.elite{background:linear-gradient(145deg,#6743b1,#1d1536 60%,#0d0918)}
+.card.immortal{background:linear-gradient(145deg,#c1435a,#35131c 60%,#13090c)}
+.ovr{font-size:28px;font-weight:1000;line-height:1}
+.pos{font-size:10px;font-weight:900}
+.flag{font-size:16px;margin-top:2px}
+.face{height:62px;margin:4px -4px;background:rgba(255,255,255,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:31px}
+.name{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.statrow{font-size:9px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:5px}
+.nav{position:fixed;bottom:0;left:0;transform:none;width:100%;z-index:50;background:rgba(6,12,10,.95);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr)}
+.nav button{background:transparent;border:0;color:#70817a;padding:8px 2px;font-size:11px;font-weight:800;border-radius:10px}
+.nav button i{display:block;font-style:normal;font-size:21px;margin-bottom:2px}
+.nav button.active{color:white;background:rgba(255,255,255,.06)}
+.panel{padding:14px;border-radius:18px;background:#101915;border:1px solid var(--line)}
+.pitch{height:min(760px,72vh);min-height:620px;border-radius:22px;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.12);background:
+ linear-gradient(rgba(16,110,65,.88),rgba(11,77,48,.88))}
+.pitch:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.18)}
+.slot{position:absolute;transform:translate(-50%,-50%);width:72px;height:90px;border-radius:10px;border:1px dashed rgba(255,255,255,.28);background:rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:8px}
+.slot.full{border-style:solid;background:linear-gradient(145deg,#8b6b22,#30240e)}
+.slot strong{font-size:20px}
+.search{width:100%;padding:12px 13px;border-radius:13px;background:#0c1512;border:1px solid var(--line);color:white;outline:none}
+.collection{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.collection .card{width:100%;min-width:0;height:208px}
+.market{padding:11px;border-radius:15px;background:#101915;border:1px solid var(--line);display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.mini{width:48px;height:61px;border-radius:9px;background:linear-gradient(145deg,#8a6a20,#2f240e);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:1000}
+.market .info{flex:1;min-width:0}
+.market .info b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market .info small{font-size:9px;color:var(--muted)}
+.price{font-size:11px;color:#ffe69d;font-weight:900;text-align:right}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-height:88vh;overflow:auto;background:#0b1310;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:15px 14px 26px}
+.sheettop{display:flex;align-items:center;justify-content:space-between}
+.sheettop h3{margin:3px 0 12px}
+.close{width:34px;height:34px;border:0;border-radius:50%;background:#17221e;color:white}
+.log{font-size:11px;line-height:1.55;min-height:135px;background:#08100e;border-radius:12px;padding:11px;color:#bac9c2;margin-top:10px}
+.error{font-size:10px;color:#ff8e93;margin-top:8px;display:none}
+
+.formbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.formbtn{border:1px solid var(--line);background:#17231e;color:#fff;padding:9px 11px;border-radius:12px;font-weight:900;font-size:12px}
+.clubstrip{display:flex;gap:10px;overflow:auto;padding:2px 0 8px}
+.clubstrip .clubplayer{min-width:124px;width:124px;padding:10px;border-radius:15px;background:#101915;border:1px solid var(--line)}
+.clubplayer b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clubplayer small{color:var(--muted);font-size:9px}
+.clubplayer .add{width:100%;margin-top:8px;border:0;border-radius:9px;padding:8px;background:#21352b;color:#baf6d5;font-size:10px;font-weight:900}
+.formation-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.formation-option{border:1px solid var(--line);background:#101915;color:#fff;padding:13px;border-radius:14px;text-align:left;font-weight:900}
+.formation-option.active{border-color:rgba(53,229,138,.55);background:rgba(53,229,138,.1)}
+.slot .need{font-size:7px;color:#afc2b9;margin-top:2px}
+.slot .offpos{color:#ffd469}
+.reward{padding:14px;border-radius:16px;background:#101915;border:1px solid var(--line);margin-top:9px}
+.rewardrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.reward b{font-size:13px}.reward small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.claim{border:0;border-radius:10px;padding:9px 11px;background:var(--green);color:#062014;font-size:10px;font-weight:1000}
+.claim[disabled]{opacity:.35}
+.signings-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.section-tabs{display:flex;gap:8px;margin-bottom:12px}.section-tabs button{flex:1;border:1px solid var(--line);border-radius:11px;padding:9px;background:#101915;color:#9eb0a7;font-weight:900}.section-tabs button.active{background:#fff;color:#07100d}
+
+</style>
+<script>
+/* This tiny function is intentionally independent of the rest of the app.
+   Even if another feature has an error, CREATE CLUB still exits the setup screen. */
+function createClub(){
+  var input=document.getElementById("clubNameInput");
+  var name=input && input.value ? input.value.replace(/^\s+|\s+$/g,"") : "";
+  if(!name){name="Vertex XI";}
+  try{localStorage.setItem("xi_club_name",name);}catch(e){}
+  var setup=document.getElementById("setup");
+  var app=document.getElementById("app");
+  if(setup){setup.style.display="none";}
+  if(app){app.style.display="block";}
+  if(window.finishCreateClub){
+    try{window.finishCreateClub(name);}catch(e){}
+  }
+  return false;
+}
+</script>
+</head>
+<body>
+<div style="position:fixed;right:8px;top:8px;z-index:2000;font:9px Arial;color:#5f7269">XI v1.7</div>
+
+<div id="setup" class="setup">
+  <form id="clubForm" class="setup-card" method="get" action="./">
+    <div class="eyebrow">WELCOME TO</div>
+    <h1>XI</h1>
+    <p>Create your club and open your first pack.</p>
+    <input id="clubNameInput" name="club" maxlength="24" value="" placeholder="Club name" autocomplete="off">
+    <button type="submit" class="btn green">CREATE CLUB</button>
+    <div id="setupError" class="error"></div>
+  </form>
+</div>
+
+<div id="app" class="app" style="display:none">
+  <section id="home" class="screen page"></section>
+  <section id="play" class="screen page hidden"></section>
+  <section id="squad" class="screen page hidden"></section>
+  <section id="club" class="screen page hidden"></section>
+  <section id="market" class="screen page hidden"></section>
+
+  <nav class="nav">
+    <button class="navbtn active" data-page="home"><i>⌂</i>HOME</button>
+    <button class="navbtn" data-page="play"><i>▶</i>PLAY</button>
+    <button class="navbtn" data-page="squad"><i>▦</i>SQUAD</button>
+    <button class="navbtn" data-page="club"><i>◈</i>CLUB</button>
+    <button class="navbtn" data-page="market"><i>◎</i>MARKET</button>
+  </nav>
+</div>
+
+<div id="modal" class="modal hidden"><div id="sheet" class="sheet"></div></div>
+
+<script>
+(function(){
+  var firstNames=["Noah","Mateo","Luca","Elias","Malik","Caio","Ren","Emil","Thiago","Javier","Kai","Leo","Milan","Nico","Yuri","Sami","Adrian","Rafael","Tomas","Iker","Hugo","Dario","Marek","Jonas","Oscar","Enzo","Ari","Deni","Luis","Marco"];
+  var lastNames=["Kovac","Varela","Diarra","Hartmann","Bellandi","Serrano","Nyberg","Velez","Ishikawa","Renner","Costa","Barreto","Mendes","Laurent","Romano","Silva","Petrovic","Moreau","Adler","Santos","Ferrer","Bauer","Marin","Ortega","Rossi","Adebayo","Keller","Navarro","Ribeiro","Novak"];
+  var flags=["🇬🇧","🇪🇸","🇮🇹","🇩🇪","🇫🇷","🇧🇷","🇦🇷","🇭🇷","🇵🇹","🇳🇱","🇯🇵","🇸🇪","🇨🇴","🇺🇾","🇧🇪","🇩🇰","🇳🇬","🇬🇭"];
+  var positions=["GK","RB","CB","CB","LB","CDM","CM","CAM","RW","LW","ST"];
+  var clubs=["Kingsport FC","Westbridge United","Bromley Athletic","Northcastle FC","Redhaven","Riverside City","Blackthorn FC","Royal Vale","Real Azul","Costa Verde","Torino Rosso","Milano Stella","Rhein Adler","Berlin Kraft","Paris Royale","Lyon Argent","Aurora Rio","Santos Nova","Buenos Plata","Tokyo Nova"];
+  var traits=["Burst","Rapid","Precision","Cannon","Flair","Control","Vision","Creator","Engine","Powerhouse","Wall","Aerial","Leader","Reflex"];
+
+  function seeded(n){var x=Math.sin(n*913.73)*43758.5453;return x-Math.floor(x);}
+  function rand(n,a,b){return Math.floor(seeded(n)*(b-a+1))+a;}
+  function makeDB(){
+    var arr=[],i,ovr,pot,pos,stats,rarity;
+    for(i=1;i<=1500;i++){
+      var r=seeded(i*7);
+      if(r<.08)ovr=rand(i,45,54);
+      else if(r<.25)ovr=rand(i,55,64);
+      else if(r<.51)ovr=rand(i,65,74);
+      else if(r<.79)ovr=rand(i,75,84);
+      else if(r<.91)ovr=rand(i,85,89);
+      else if(r<.973)ovr=rand(i,90,94);
+      else if(r<.997)ovr=rand(i,95,99);
+      else ovr=rand(i,100,104);
+
+      pot=Math.min(145,Math.max(ovr,ovr+rand(i*4,5,43)));
+      if(i===947){ovr=57;pot=145;}
+      pos=positions[i%positions.length];
+
+      function s(seed){return Math.max(25,Math.min(145,ovr+rand(i*seed,-15,15)));}
+      if(pos==="GK"){
+        stats={DIV:s(2),HAN:s(3),KIC:s(5),REF:s(7),SPD:Math.max(25,ovr-12),POS:s(11)};
+      }else{
+        stats={PAC:s(2),SHO:s(3),PAS:s(5),DRI:s(7),DEF:s(11),PHY:s(13)};
+      }
+      rarity=ovr>=100?"immortal":ovr>=90?"elite":ovr>=75?"gold":"prospect";
+      arr.push({
+        id:i,
+        name:firstNames[i%firstNames.length]+" "+lastNames[(i*7)%lastNames.length],
+        ovr:ovr,pot:pot,pos:pos,flag:flags[(i*3)%flags.length],
+        club:clubs[(i*11)%clubs.length],
+        trait:traits[(i*5)%traits.length],
+        rarity:rarity,stats:stats,
+        value:Math.max(250,Math.round((ovr*ovr*(pot/100))*2.2/50)*50),
+        evo:0,games:0
+      });
+    }
+    return arr;
+  }
+
+  var db=makeDB();
+  var state={
+    club:null,coins:25000,owned:[],squad:[],wins:0,draws:0,losses:0,level:1,evoSlots:2,formation:'4-3-3 Attack',dailyDate:'',dailyPlayed:0,dailyWins:0,dailyGoals:0,dailyClaims:{},lastGrant:0,buildVersion:0
+  };
+
+  function load(){
+    try{
+      var raw=localStorage.getItem("xi_v14_state");
+      if(raw){
+        var x=JSON.parse(raw);
+        if(x && typeof x==="object"){
+          for(var k in state){if(Object.prototype.hasOwnProperty.call(x,k)){state[k]=x[k];}}
+        }
+      }
+      var params=new URLSearchParams(window.location.search);
+      var queryClub=(params.get("club")||"").trim();
+      if(queryClub){
+        state.club=queryClub.slice(0,24);
+        localStorage.setItem("xi_club_name",state.club);
+      }
+      var clubOnly=localStorage.getItem("xi_club_name");
+      if(!state.club && clubOnly){state.club=clubOnly;}
+    }catch(e){}
+    if(!Array.isArray(state.owned)){state.owned=[];}
+    if(!Array.isArray(state.squad)){state.squad=[];}
+    if(!state.formation || !formations[state.formation])state.formation="4-3-3 Attack";
+    if(!state.dailyClaims || typeof state.dailyClaims!=="object")state.dailyClaims={};
+    ensureDaily();
+  }
+  function save(){
+    try{localStorage.setItem("xi_v14_state",JSON.stringify(state));}catch(e){}
+  }
+
+  function byId(id){return db[id-1] || null;}
+  function owned(){
+    var out=[],i,p;
+    for(i=0;i<state.owned.length;i++){p=byId(state.owned[i]);if(p){out.push(p);}}
+    return out;
+  }
+  function top(title){
+    return '<div class="top"><div><div class="logo">XI</div><div class="sub">'+escapeHTML(state.club||"YOUR CLUB")+' · LVL '+state.level+'</div></div>'+
+      '<div class="coins">★ '+number(state.coins)+'</div></div>'+
+      (title?'<div class="heading"><h3>'+title+'</h3></div>':'');
+  }
+  function escapeHTML(v){
+    return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function number(v){return Number(v||0).toLocaleString();}
+  function card(p,action){
+    var keys=[],k;
+    for(k in p.stats){if(Object.prototype.hasOwnProperty.call(p.stats,k)){keys.push(k);}}
+    var st="",i;
+    for(i=0;i<keys.length;i++){k=keys[i];st+='<div><b>'+p.stats[k]+'</b> '+k+'</div>';}
+    var click=action||('XI.player('+p.id+')');
+    return '<div class="card '+p.rarity+'" onclick="'+click+'">'+
+      '<div class="ovr">'+p.ovr+'</div><div class="pos">'+p.pos+'</div>'+
+      '<div class="flag">'+p.flag+'</div><div class="face">⚽</div>'+
+      '<div class="name">'+escapeHTML(p.name)+'</div><div class="statrow">'+st+'</div></div>';
+  }
+
+  function home(){
+    var list=owned().sort(function(a,b){return b.ovr-a.ovr;}).slice(0,5);
+    var cards="",i;
+    for(i=0;i<list.length;i++){cards+=card(list[i]);}
+    if(!cards){cards='<div class="panel" style="font-size:11px;color:var(--muted)">Your starter players will appear here.</div>';}
+    document.getElementById("home").innerHTML=top("")+
+      '<div class="hero"><div class="eyebrow">SEASON 1 · GENESIS</div><h2>BUILD YOUR<br>LEGACY.</h2>'+
+      '<p>Collect fictional stars, build your XI and evolve favourites into club legends.</p>'+
+      '<button class="smallbtn" onclick="XI.openPack()">✦ OPEN PACK</button></div>'+
+      '<div class="grid">'+
+      '<div class="tile" onclick="XI.go(\'squad\')"><div class="ico">▦</div><b>MY SQUAD</b><span>'+state.squad.length+'/11 selected</span></div>'+
+      '<div class="tile" onclick="XI.evos()"><div class="ico">⬆</div><b>EVOLUTIONS</b><span>'+state.evoSlots+' active slots</span></div>'+
+      '<div class="tile" onclick="XI.go(\'play\')"><div class="ico">⚔</div><b>DIVISION 10</b><span>'+state.wins+'W · '+state.draws+'D · '+state.losses+'L</span></div>'+
+      '<div class="tile" onclick="XI.go(\'club\')"><div class="ico">◈</div><b>CLUB</b><span>'+state.owned.length+' players · signings</span></div>'+'<div class="tile" onclick="XI.starHub()"><div class="ico">★</div><b>EARN STARS</b><span>Daily goals & club grant</span></div>'+'<div class="tile" onclick="XI.formations()"><div class="ico">⌘</div><b>FORMATIONS</b><span>18 tactical shapes</span></div>'+
+      '</div><div class="heading"><h3>Top players</h3><small>'+state.owned.length+' owned</small></div><div class="cards">'+cards+'</div>';
+  }
+
+  function play(){
+    document.getElementById("play").innerHTML=top("Play")+
+      '<div class="panel"><div class="eyebrow">RANKED · DIVISION 10</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 60px 1fr;text-align:center;align-items:center;margin:20px 0">'+
+      '<div><div style="font-size:28px">XI</div><b style="font-size:11px">'+escapeHTML(state.club||"Your Club")+'</b></div>'+
+      '<div id="score" style="font-size:28px;font-weight:1000">–</div>'+
+      '<div><div style="font-size:28px">◆</div><b style="font-size:11px">Northstar FC</b></div></div>'+
+      '<button class="btn green" onclick="XI.match()">PLAY MATCH</button>'+
+      '<div id="matchlog" class="log">Build at least 7 squad players, then play.</div></div>';
+  }
+
+
+  var formations={
+    "4-3-3 Attack":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CM",28,57],["CM",72,57],["CAM",50,43],["LW",20,29],["ST",50,18],["RW",80,29]
+    ],
+    "4-3-3 Holding":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CDM",50,63],["CM",30,51],["CM",70,51],["LW",20,29],["ST",50,18],["RW",80,29]
+    ],
+    "4-3-3 Flat":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CM",24,55],["CM",50,55],["CM",76,55],["LW",20,29],["ST",50,18],["RW",80,29]
+    ],
+    "4-2-3-1":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CDM",35,62],["CDM",65,62],["LM",18,42],["CAM",50,43],["RM",82,42],["ST",50,18]
+    ],
+    "4-2-2-2":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CDM",35,61],["CDM",65,61],["CAM",25,42],["CAM",75,42],["ST",35,19],["ST",65,19]
+    ],
+    "4-4-2":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["LM",15,52],["CM",38,55],["CM",62,55],["RM",85,52],["ST",35,20],["ST",65,20]
+    ],
+    "4-4-1-1":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["LM",15,54],["CM",38,56],["CM",62,56],["RM",85,54],["CAM",50,38],["ST",50,18]
+    ],
+    "4-1-2-1-2 Narrow":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CDM",50,65],["CM",30,52],["CM",70,52],["CAM",50,39],["ST",35,19],["ST",65,19]
+    ],
+    "4-1-2-1-2 Wide":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CDM",50,64],["LM",18,52],["RM",82,52],["CAM",50,39],["ST",35,19],["ST",65,19]
+    ],
+    "4-3-1-2":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CM",25,56],["CM",50,60],["CM",75,56],["CAM",50,39],["ST",35,19],["ST",65,19]
+    ],
+    "4-3-2-1":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["CM",25,57],["CM",50,60],["CM",75,57],["CAM",30,34],["CAM",70,34],["ST",50,18]
+    ],
+    "3-4-3":[
+      ["GK",50,92],["CB",25,78],["CB",50,81],["CB",75,78],
+      ["LM",15,55],["CM",38,58],["CM",62,58],["RM",85,55],
+      ["LW",20,29],["ST",50,18],["RW",80,29]
+    ],
+    "3-4-2-1":[
+      ["GK",50,92],["CB",25,78],["CB",50,81],["CB",75,78],
+      ["LM",15,57],["CM",38,59],["CM",62,59],["RM",85,57],
+      ["CAM",30,34],["CAM",70,34],["ST",50,18]
+    ],
+    "3-5-2":[
+      ["GK",50,92],["CB",25,79],["CB",50,82],["CB",75,79],
+      ["LM",13,55],["CDM",50,64],["CM",32,52],["CM",68,52],["RM",87,55],
+      ["ST",35,20],["ST",65,20]
+    ],
+    "5-2-1-2":[
+      ["GK",50,92],["LWB",10,70],["CB",30,79],["CB",50,82],["CB",70,79],["RWB",90,70],
+      ["CM",35,55],["CM",65,55],["CAM",50,39],["ST",35,19],["ST",65,19]
+    ],
+    "5-3-2":[
+      ["GK",50,92],["LWB",10,70],["CB",30,79],["CB",50,82],["CB",70,79],["RWB",90,70],
+      ["CM",25,53],["CM",50,58],["CM",75,53],["ST",35,20],["ST",65,20]
+    ],
+    "5-2-3":[
+      ["GK",50,92],["LWB",10,70],["CB",30,79],["CB",50,82],["CB",70,79],["RWB",90,70],
+      ["CM",35,55],["CM",65,55],["LW",20,29],["ST",50,18],["RW",80,29]
+    ],
+    "4-5-1":[
+      ["GK",50,92],["LB",15,77],["CB",38,80],["CB",62,80],["RB",85,77],
+      ["LM",14,52],["CM",34,56],["CAM",50,43],["CM",66,56],["RM",86,52],["ST",50,18]
+    ]
+  };
+
+  function formationSlots(){
+    return formations[state.formation]||formations["4-3-3 Attack"];
+  }
+
+  function compatible(playerPos,slotPos){
+    if(playerPos===slotPos)return 40;
+    var groups={
+      GK:["GK"],
+      CB:["CB","LB","RB","CDM"],
+      LB:["LB","LWB","CB","LM"],
+      RB:["RB","RWB","CB","RM"],
+      LWB:["LB","LWB","LM","LW"],
+      RWB:["RB","RWB","RM","RW"],
+      CDM:["CDM","CM","CB"],
+      CM:["CM","CDM","CAM"],
+      CAM:["CAM","CM","ST","LW","RW"],
+      LM:["LM","LW","CM","LWB"],
+      RM:["RM","RW","CM","RWB"],
+      LW:["LW","LM","RW","ST","CAM"],
+      RW:["RW","RM","LW","ST","CAM"],
+      ST:["ST","CAM","LW","RW"]
+    };
+    var g=groups[slotPos]||[slotPos];
+    var idx=g.indexOf(playerPos);
+    return idx<0?-25:(24-idx*5);
+  }
+
+  function bestAssign(ids){
+    var slots=formationSlots(),players=[],i,p,j,best,bestScore,score,result=[];
+    for(i=0;i<ids.length;i++){p=byId(ids[i]);if(p)players.push(p);}
+    for(i=0;i<slots.length;i++){
+      best=-1;bestScore=-9999;
+      for(j=0;j<players.length;j++){
+        if(!players[j])continue;
+        score=players[j].ovr+compatible(players[j].pos,slots[i][0]);
+        if(score>bestScore){bestScore=score;best=j;}
+      }
+      if(best>=0){result[i]=players[best].id;players[best]=null;}
+    }
+    return result;
+  }
+
+  function reassignCurrentSquad(){
+    var ids=[],seen={},i,id;
+    for(i=0;i<state.squad.length;i++){
+      id=state.squad[i];
+      if(id&&!seen[id]){seen[id]=true;ids.push(id);}
+    }
+    state.squad=bestAssign(ids);
+  }
+
+  function squad(){
+    sanitizeSquad();
+    var slots=formationSlots(),html="",i,p,slotPos,off,used={},bench=[],list=owned(),benchHtml="";
+    for(i=0;i<state.squad.length;i++){if(state.squad[i])used[state.squad[i]]=true;}
+    for(i=0;i<11;i++){
+      p=byId(state.squad[i]);
+      slotPos=slots[i][0];
+      off=p && compatible(p.pos,slotPos)<0;
+      html+='<div class="slot '+(p?'full':'')+'" style="left:'+slots[i][1]+'%;top:'+slots[i][2]+'%" onclick="XI.pick('+i+')">';
+      if(p){
+        html+='<strong>'+p.ovr+'</strong><b>'+escapeHTML(p.name.split(" ")[1]||p.name)+'</b>'+
+          '<span class="'+(off?'offpos':'')+'">'+p.pos+'</span><span class="need">'+slotPos+(off?' · OFF POS':'')+'</span>';
+      }else{
+        html+='<strong>+</strong><b>'+slotPos+'</b><span class="need">ADD PLAYER</span>';
+      }
+      html+='</div>';
+    }
+    for(i=0;i<list.length;i++){if(!used[list[i].id])bench.push(list[i]);}
+    bench=bench.sort(function(a,b){return b.ovr-a.ovr;}).slice(0,12);
+    for(i=0;i<bench.length;i++){
+      p=bench[i];
+      benchHtml+='<div class="clubplayer"><b>'+p.ovr+' · '+escapeHTML(p.name)+'</b><small>'+p.flag+' '+p.pos+' · '+p.trait+'</small>'+
+        '<button class="add" onclick="XI.addFromClub('+p.id+')">ADD TO XI</button></div>';
+    }
+    if(!benchHtml)benchHtml='<div class="panel" style="min-width:220px">All owned players are currently in the XI.</div>';
+
+    var sq=[],sum=0;
+    for(i=0;i<state.squad.length;i++){p=byId(state.squad[i]);if(p){sq.push(p);sum+=p.ovr;}}
+    var avg=sq.length?Math.round(sum/sq.length):0;
+    document.getElementById("squad").innerHTML=top("Squad")+
+      '<div class="panel formbar" style="margin-bottom:10px"><div><div class="eyebrow">FORMATION</div><b>'+escapeHTML(state.formation)+'</b></div>'+
+      '<div style="display:flex;align-items:center;gap:10px"><div style="text-align:right"><div class="eyebrow">OVR</div><b style="font-size:22px">'+avg+'</b></div>'+
+      '<button class="formbtn" onclick="XI.formations()">CHANGE</button></div></div>'+
+      '<div class="pitch">'+html+'</div>'+
+      '<button class="btn dark" onclick="XI.autoSquad()">AUTO BUILD BY POSITION</button>'+
+      '<div class="heading"><h3>Club Players</h3><small>Tap ADD TO XI</small></div>'+
+      '<div class="clubstrip">'+benchHtml+'</div>';
+  }
+
+  function club(){
+    var list=owned().sort(function(a,b){return b.ovr-a.ovr;});
+    var html="",i,p,signings=[],signHtml="",start=(state.wins*97+state.losses*31+317)%1300;
+    for(i=0;i<list.length;i++){html+=card(list[i]);}
+    for(i=0;i<10;i++){
+      p=byId(((start+i*71)%1500)+1);
+      if(p && state.owned.indexOf(p.id)<0){signings.push(p);}
+    }
+    for(i=0;i<signings.length;i++){
+      p=signings[i];
+      signHtml+='<div class="market"><div class="mini">'+p.ovr+'</div><div class="info"><b>'+escapeHTML(p.name)+'</b>'+
+        '<small>'+p.flag+' '+p.pos+' · '+escapeHTML(p.club)+'<br>'+p.trait+'</small></div>'+
+        '<div><div class="price">★ '+number(p.value)+'</div><button class="smallbtn" style="padding:7px 10px;margin-top:4px" onclick="XI.buy('+p.id+')">SIGN</button></div></div>';
+    }
+    document.getElementById("club").innerHTML=top("Club")+
+      '<div class="heading"><h3>New Signings</h3><small>Refreshes as you play</small></div>'+
+      '<div class="signings-grid">'+signHtml+'</div>'+
+      '<div class="heading"><h3>My Players</h3><small>'+state.owned.length+' owned</small></div>'+
+      '<input id="collectionSearch" class="search" placeholder="Search your club" oninput="XI.searchClub(this.value)">'+
+      '<div id="collectionGrid" class="collection">'+(html||'<div class="panel">No cards yet.</div>')+'</div>';
+  }
+
+  function market(){
+    var list=[],i,p,start=Math.floor(Math.random()*1300)+1;
+    for(i=0;i<14;i++){
+      p=byId(((start+i*37)%1500)+1);
+      if(p && state.owned.indexOf(p.id)<0){list.push(p);}
+    }
+    var html="";
+    for(i=0;i<list.length;i++){
+      p=list[i];
+      html+='<div class="market"><div class="mini">'+p.ovr+'</div><div class="info"><b>'+escapeHTML(p.name)+'</b>'+
+        '<small>'+p.flag+' '+p.pos+' · '+escapeHTML(p.club)+'<br>'+p.trait+'</small></div>'+
+        '<div><div class="price">★ '+number(p.value)+'</div><button class="smallbtn" style="padding:7px 10px;margin-top:4px" onclick="XI.buy('+p.id+')">BUY</button></div></div>';
+    }
+    document.getElementById("market").innerHTML=top("Transfer Market")+'<div>'+html+'</div>';
+  }
+
+
+  function todayKey(){
+    var d=new Date();
+    return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+  }
+
+  function ensureDaily(){
+    var k=todayKey();
+    if(state.dailyDate!==k){
+      state.dailyDate=k;
+      state.dailyPlayed=0;state.dailyWins=0;state.dailyGoals=0;state.dailyClaims={};
+    }
+  }
+
+  function taskClaimed(key){ensureDaily();return !!state.dailyClaims[key];}
+  function taskReady(key){
+    ensureDaily();
+    if(key==="play3")return state.dailyPlayed>=3;
+    if(key==="win2")return state.dailyWins>=2;
+    if(key==="goals6")return state.dailyGoals>=6;
+    return false;
+  }
+
+  function claimTask(key,reward){
+    ensureDaily();
+    if(taskClaimed(key)||!taskReady(key))return;
+    state.dailyClaims[key]=true;
+    state.coins+=reward;
+    save();home();XI.starHub();
+  }
+
+  function grantReady(){
+    return state.coins<1000 && (Date.now()-(state.lastGrant||0)>=24*60*60*1000);
+  }
+
+  function sanitizeSquad(){
+    if(!Array.isArray(state.squad)){state.squad=[];return;}
+    var seen={},clean=[],i,id;
+    for(i=0;i<state.squad.length && i<11;i++){
+      id=state.squad[i];
+      if(id && !seen[id]){seen[id]=true;clean[i]=id;}
+      else{clean[i]=null;}
+    }
+    state.squad=clean;
+  }
+
+  function renderAll(){sanitizeSquad();home();play();squad();club();market();}
+
+  function starterPlayers(){
+    var wanted=["GK","LB","CB","CB","RB","CM","CM","CAM","LW","ST","RW"],result=[],i,j,p;
+    for(i=0;i<wanted.length;i++){
+      for(j=0;j<db.length;j++){
+        p=db[j];
+        if(p.pos===wanted[i] && p.ovr>=70 && p.ovr<=82 && result.indexOf(p.id)<0){
+          result.push(p.id);break;
+        }
+      }
+    }
+    return result;
+  }
+
+  window.finishCreateClub=function(name){
+    state.club=name;
+    if(state.owned.length===0){
+      state.owned=starterPlayers();
+      state.squad=bestAssign(state.owned.slice(0,11));
+    }
+    save();
+    document.getElementById("app").style.display="block";
+    renderAll();
+    XI.go("home");
+    try{if(window.location.search){history.replaceState(null,"",window.location.pathname);}}catch(e){}
+  };
+
+  window.XI={
+    go:function(page){
+      var pages=document.querySelectorAll(".page"),buttons=document.querySelectorAll(".navbtn"),i;
+      for(i=0;i<pages.length;i++){pages[i].classList.add("hidden");}
+      var target=document.getElementById(page);
+      if(target){target.classList.remove("hidden");}
+      for(i=0;i<buttons.length;i++){
+        if(buttons[i].getAttribute("data-page")===page){buttons[i].classList.add("active");}
+        else{buttons[i].classList.remove("active");}
+      }
+      if(page==="home")home();
+      if(page==="play")play();
+      if(page==="squad")squad();
+      if(page==="club")club();
+      if(page==="market")market();
+    },
+    formations:function(){
+      var names=[],k,html="",i;
+      for(k in formations){if(Object.prototype.hasOwnProperty.call(formations,k))names.push(k);}
+      for(i=0;i<names.length;i++){
+        html+='<button class="formation-option '+(names[i]===state.formation?'active':'')+'" onclick="XI.setFormation(\''+names[i].replace(/'/g,"\\'")+'\')">'+names[i]+'</button>';
+      }
+      document.getElementById("sheet").innerHTML='<div class="sheettop"><h3>Choose Formation</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<p class="sub">'+names.length+' formations available. Your current players will be rearranged by their natural positions.</p><div class="formation-list">'+html+'</div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    setFormation:function(name){
+      if(!formations[name])return;
+      state.formation=name;
+      reassignCurrentSquad();
+      save();XI.close();squad();home();
+    },
+    starHub:function(){
+      ensureDaily();
+      var grant=grantReady();
+      function task(key,title,progress,target,reward){
+        var ready=progress>=target,claimed=taskClaimed(key);
+        return '<div class="reward"><div class="rewardrow"><div><b>'+title+'</b><small>'+Math.min(progress,target)+' / '+target+' · ★ '+reward+'</small></div>'+
+          '<button class="claim" '+((!ready||claimed)?'disabled':'')+' onclick="XI.claimStars(\''+key+'\','+reward+')">'+(claimed?'CLAIMED':ready?'CLAIM':'LOCKED')+'</button></div></div>';
+      }
+      document.getElementById("sheet").innerHTML='<div class="sheettop"><h3>Earn Stars</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="panel"><div class="eyebrow">DAILY CLUB GOALS</div><h2 style="margin:5px 0">★ '+number(state.coins)+'</h2><p class="sub">Stars are deliberately grindy: a pack should take several matches, not one.</p></div>'+
+        task("play3","Play 3 matches",state.dailyPlayed,3,500)+
+        task("win2","Win 2 matches",state.dailyWins,2,650)+
+        task("goals6","Score 6 goals",state.dailyGoals,6,450)+
+        '<div class="reward"><div class="rewardrow"><div><b>Club Support Grant</b><small>Only available below ★ 1,000 · once every 24h · ★ 500</small></div>'+
+        '<button class="claim" '+(grant?'':'disabled')+' onclick="XI.clubGrant()">'+(grant?'CLAIM':'LOCKED')+'</button></div></div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    claimStars:function(key,reward){claimTask(key,reward);},
+    clubGrant:function(){
+      if(!grantReady())return;
+      state.coins+=500;state.lastGrant=Date.now();save();home();XI.starHub();
+    },
+    player:function(id){
+      var p=byId(id);if(!p)return;
+      var ownedFlag=state.owned.indexOf(id)>=0;
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>'+escapeHTML(p.name)+'</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div style="display:flex;justify-content:center;margin:10px 0 18px">'+card(p)+'</div>'+
+        '<div class="panel"><b>'+p.flag+' '+escapeHTML(p.club)+'</b>'+
+        '<div class="sub" style="margin-top:6px">'+p.pos+' · '+p.trait+' · '+p.games+' apps</div>'+
+        '<div style="display:flex;justify-content:space-between;margin-top:8px"><span>Evolution</span><b>E'+p.evo+'</b></div></div>'+
+        (ownedFlag?'<button class="btn green" onclick="XI.evolve('+p.id+')">EVOLVE · ★ '+number(6000+p.ovr*100)+'</button>':'');
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    close:function(){document.getElementById("modal").classList.add("hidden");},
+    openPack:function(){
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>GENESIS PACK</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="panel" style="text-align:center;padding:24px"><div style="font-size:58px">XI</div><h2>GENESIS PACK</h2>'+
+        '<p class="sub">5 players · 1 guaranteed 75+</p><button class="btn green" onclick="XI.pack()">OPEN · ★ 5,000</button></div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    pack:function(){
+      if(state.coins<5000){return;}
+      state.coins-=5000;
+      var picks=[],i,p,tries;
+      for(i=0;i<5;i++){
+        tries=0;
+        do{
+          p=db[Math.floor(Math.random()*db.length)];
+          tries++;
+        }while((state.owned.indexOf(p.id)>=0 || picks.indexOf(p.id)>=0 || (i===0 && p.ovr<75)) && tries<300);
+        if(p && picks.indexOf(p.id)<0){picks.push(p.id);state.owned.push(p.id);}
+      }
+      save();renderAll();
+      var html="",q;
+      for(i=0;i<picks.length;i++){q=byId(picks[i]);if(q)html+=card(q);}
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>PACK OPENED</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="cards">'+html+'</div><button class="btn green" onclick="XI.close()">SEND TO CLUB</button>';
+    },
+    buy:function(id){
+      var p=byId(id);if(!p || state.owned.indexOf(id)>=0 || state.coins<p.value)return;
+      state.coins-=p.value;state.owned.push(id);save();renderAll();market();
+    },
+    pick:function(index){
+      sanitizeSquad();
+      var list=owned().sort(function(a,b){return b.ovr-a.ovr;}),html="",i,usedAt=-1,p,slots=formationSlots();
+      for(i=0;i<list.length;i++){
+        p=list[i];usedAt=state.squad.indexOf(p.id);
+        html+=card(p,'XI.placeOrSwap('+index+','+p.id+')');
+      }
+      if(!html)html='<div class="panel">No players available.</div>';
+      document.getElementById("sheet").innerHTML='<div class="sheettop"><h3>'+slots[index][0]+' · Choose or move player</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<p class="sub">Selecting a player already in your XI swaps the two positions.</p><div class="cards" style="flex-wrap:wrap">'+html+'</div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    placeOrSwap:function(index,id){
+      sanitizeSquad();
+      var current=state.squad[index]||null,other=state.squad.indexOf(id);
+      if(other>=0 && other!==index){
+        state.squad[other]=current;
+        state.squad[index]=id;
+      }else{
+        state.squad[index]=id;
+      }
+      save();XI.close();squad();home();
+    },
+    setSlot:function(index,id){XI.placeOrSwap(index,id);},
+    addFromClub:function(id){
+      var slots=formationSlots(),html="",i,p=byId(id);
+      if(!p)return;
+      for(i=0;i<slots.length;i++){
+        html+='<button class="formation-option" onclick="XI.placeOrSwap('+i+','+id+')">'+slots[i][0]+' · slot '+(i+1)+'</button>';
+      }
+      document.getElementById("sheet").innerHTML='<div class="sheettop"><h3>Add '+escapeHTML(p.name)+'</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<p class="sub">Pick any position. Off-position players are allowed.</p><div class="formation-list">'+html+'</div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    autoSquad:function(){
+      var ids=[],list=owned(),i;
+      for(i=0;i<list.length;i++)ids.push(list[i].id);
+      state.squad=bestAssign(ids);
+      save();squad();home();
+    },
+    match:function(){
+      ensureDaily();
+      var team=[],i,p,sum=0;
+      for(i=0;i<state.squad.length;i++){p=byId(state.squad[i]);if(p){team.push(p);sum+=p.ovr;}}
+      if(team.length<7){
+        document.getElementById("matchlog").innerHTML="You need at least 7 players in your squad.";
+        return;
+      }
+      var avg=sum/team.length;
+      var my=Math.max(0,Math.floor((avg-55)/18+Math.random()*3));
+      var opp=Math.max(0,Math.floor((75-55)/18+Math.random()*3));
+      document.getElementById("score").innerHTML=my+"–"+opp;
+      document.getElementById("matchlog").innerHTML="18' Early pressure from both sides.<br>37' Big chance created.<br>62' Goal threat builds.<br>84' Final push.<br><b>FT · "+my+"-"+opp+"</b>";
+      state.dailyPlayed++;state.dailyGoals+=my;
+      if(my>opp){state.wins++;state.dailyWins++;state.coins+=400;}
+      else if(my<opp){state.losses++;state.coins+=150;}
+      else{state.draws++;state.coins+=250;}
+      for(i=0;i<team.length;i++){team[i].games++;}
+      save();home();
+    },
+    searchClub:function(q){
+      q=String(q||"").toLowerCase();
+      var list=owned(),html="",i,p;
+      for(i=0;i<list.length;i++){
+        p=list[i];
+        if(!q || p.name.toLowerCase().indexOf(q)>=0 || p.club.toLowerCase().indexOf(q)>=0 || p.pos.toLowerCase().indexOf(q)>=0){html+=card(p);}
+      }
+      document.getElementById("collectionGrid").innerHTML=html||'<div class="panel">No matches.</div>';
+    },
+    evos:function(){
+      var list=owned().sort(function(a,b){return b.pot-a.pot;}).slice(0,8),html="",i;
+      for(i=0;i<list.length;i++){html+=card(list[i]);}
+      document.getElementById("sheet").innerHTML=
+        '<div class="sheettop"><h3>EVOLUTION LAB</h3><button class="close" onclick="XI.close()">×</button></div>'+
+        '<div class="panel"><div class="eyebrow">ACTIVE SLOTS</div><h2>'+state.evoSlots+' / 7</h2><p class="sub">Upgrade players through unique evolution paths.</p>'+
+        '<button class="btn dark" onclick="XI.buySlot()">UNLOCK NEXT SLOT</button></div>'+
+        '<div class="heading"><h3>Recommended</h3></div><div class="cards">'+html+'</div>';
+      document.getElementById("modal").classList.remove("hidden");
+    },
+    buySlot:function(){
+      var costs=[0,0,25000,75000,200000,500000,1000000];
+      if(state.evoSlots>=7)return;
+      var cost=costs[state.evoSlots];
+      if(state.coins<cost)return;
+      state.coins-=cost;state.evoSlots++;save();home();XI.evos();
+    },
+    evolve:function(id){
+      var p=byId(id);if(!p)return;
+      var cost=6000+p.ovr*100;
+      if(state.coins<cost || p.ovr>=p.pot)return;
+      state.coins-=cost;
+      p.ovr=Math.min(p.pot,p.ovr+1);p.evo++;
+      if(p.stats.PAC!=null)p.stats.PAC=Math.min(145,p.stats.PAC+3);
+      if(p.stats.DRI!=null)p.stats.DRI=Math.min(145,p.stats.DRI+2);
+      p.rarity=p.ovr>=130?"immortal":p.ovr>=90?"elite":p.ovr>=75?"gold":"prospect";
+      save();renderAll();XI.player(id);
+    }
+  };
+
+  var navs=document.querySelectorAll(".navbtn"),n;
+  for(n=0;n<navs.length;n++){
+    navs[n].onclick=function(){XI.go(this.getAttribute("data-page"));};
+  }
+
+  load();
+  sanitizeSquad();
+  if((state.buildVersion||0)<17){
+    reassignCurrentSquad();
+    state.buildVersion=17;
+  }
+  save();
+
+  if(state.club){
+    document.getElementById("setup").style.display="none";
+    document.getElementById("app").style.display="block";
+    renderAll();
+    XI.go("home");
+  }else{
+    document.getElementById("setup").style.display="flex";
+    document.getElementById("app").style.display="none";
+  }
+})();
+</script>
+</body>
+</html>
